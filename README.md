@@ -11,6 +11,7 @@ A simple android library project for Unity which contains some useful features:
 +Use 7-zip to open this aar plugin and delete class.jar inside "libs" folder. You can read this blog to understand the reason which force us to delete the class.jar file.
 +Copy the modified unityrecorder-release.aar to Plugins/Android folder inside your project.
 +Add a AndroidManifest.xml in the same folder which have the content below:
+```xml
 
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="your package name">
@@ -24,6 +25,7 @@ A simple android library project for Unity which contains some useful features:
   </application>
 </manifest>
 
+```
 Now your plugin is ready to use in any Unity project.
 
 #Screen Record guide.
@@ -31,6 +33,7 @@ Now your plugin is ready to use in any Unity project.
 To record android screen you have to follow this instruction:
 1.Set-up recorder.
 Call this inside Start() function of your script.
+```cs
 
 using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
         {
@@ -40,18 +43,30 @@ using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.Un
             androidRecorder.Call("setupVideo", width, height,(int)(1f * width * height / 100 * 240 * 7), 30);
 			androidRecorder.Call("setCallback","AndroidUtilsController","VideoRecorderCallback");//this line set up the callback from java to Unity for more information please google it.
         }
+	
+```
 2. Start record.
 Call 2 lines of code to prepare for record.
+```cs
 
 		androidRecorder.Call("setFileName", VIDEO_NAME);//androidRecorder is a private variable which we have get reference inside Start() function.
-        androidRecorder.Call("prepareRecorder");
-		
+        	androidRecorder.Call("prepareRecorder");
+
+```
 Then call this to start record screen.
+```cs
+
 		androidRecorder.Call("startRecording");
+		
+```
 
 3. Stop record.
 Call
+```
+
 	androidRecorder.Call("stopRecording");
+	
+```
 4. Handle callback
 Create a function name VideoRecorderCallback(string message) inside your project. It will receive callback from java side.
 List of messages from java:
@@ -63,26 +78,34 @@ List of messages from java:
 #Gallery refresh guide.
 
 This function refresh your gallery so pictures or videos capture inside your game will show up next time you open gallery, or file explore app. Call this on your unity script.
+```cs
 
         using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
         javaClass.GetStatic<AndroidJavaObject>("currentActivity").Call("refreshGallery", path);
 		}
 
+```
 This function will open your gallery app.
+```cs
 
 		using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
 			javaClass.GetStatic<AndroidJavaObject>("currentActivity").Call("openGallery");
 	   }
 
+```
 #Runtime Permissions guide
 
 Runtime permission allow you to request android permission at runtime(for android 6.0 and above). Example: When your game need to access location service, instead of request this permission at the first runtime now you can delay it until the moment your app actually need to use the permission.
 *Note that. Your app can only request the permissions which have been declared in AndroidManifest.xml
 
 1. You need to declare the permissions in AndroidManifest.xml. Then add this below meta-data to skip request permission dialog when you open app first time.
+```xml
 
 <meta-data android:name="unityplayer.SkipPermissionsDialog" android:value="true" />
+
+```
 the final AndroidManifest.xml must look similar like this.
+```xml
 
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android" package="vn.adt.amazingvideo">
@@ -98,7 +121,9 @@ the final AndroidManifest.xml must look similar like this.
   </application>
 </manifest>
 
+```
 2.To check if your app has a permision
+```cs
 
 public static bool IsPermitted(AndroidPermission permission)
     {
@@ -110,8 +135,10 @@ public static bool IsPermitted(AndroidPermission permission)
 #endif
         return true;
     }
-	
+
+```
 3.To request a permission.
+```cs
 
 public static void RequestPermission(AndroidPermission permission, UnityAction onAllow = null, UnityAction onDeny = null, UnityAction onDenyAndNeverAskAgain = null)
     {
@@ -125,15 +152,21 @@ public static void RequestPermission(AndroidPermission permission, UnityAction o
         }
 #endif
     }
-	
+    
+```
 4. Helper function to convert from enum to android permission string.
+```cs
 
 	private static string GetPermissionStrr(AndroidPermission permission)
     {
         return "android.permission." + permission.ToString();
     }
+    
+ ```
 
 5. List of android permissions
+```cs
+
 public enum AndroidPermission
 {
     ACCESS_COARSE_LOCATION,
@@ -162,7 +195,13 @@ public enum AndroidPermission
     WRITE_EXTERNAL_STORAGE
 }
 
+```
+
 6. Implement 3 functions below to receive callback when you request a permission.
+```cs
+
 private void OnAllow(){}
 private void OnDeny(){}
 private void OnDenyAndNeverAskAgain(){}
+
+```
