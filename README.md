@@ -5,8 +5,8 @@ A simple android library project for Unity which contains some useful features:
 +Refresh and open gallery after take a screen shot or screen capture.
 
 #Build guide:
-+Clone this project and open it using Android Studio
-+In Gradle project: Navigate to Android_Screen_Recorder/unityrecorder/Tasks/build and double-click to "assembleRelease"
++Clone this project and open it using Android Studio.
++In Gradle project: Navigate to Android_Screen_Recorder/unityrecorder/Tasks/build and double-click to "assembleRelease".
 +Wait for build process to complete then get your plugin in Android_Screen_Recorder/unityrecorder/build/generated/outputs/aar/unityrecorder-release.aar
 +Use 7-zip to open this aar plugin and delete class.jar inside "libs" folder. You can read this blog to understand the reason which force us to delete the class.jar file.
 +Copy the modified unityrecorder-release.aar to Plugins/Android folder inside your project.
