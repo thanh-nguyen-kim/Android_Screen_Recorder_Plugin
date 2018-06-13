@@ -1,16 +1,16 @@
-# Android_Utils_Plugin
-A simple android library project for Unity which contains some useful features:
-+Capture android screen as a video.
-+Request android permissions at runtime.
-+Refresh and open gallery after take a screen shot or screen capture.
+# Android_Utils_Plugin  
+A simple android library project for Unity which contains some useful features:  
++Capture android screen as a video.  
++Request android permissions at runtime.  
++Refresh and open gallery after take a screen shot or screen capture.  
 
 #Build guide:
-+Clone this project and open it using Android Studio.
-+In Gradle project: Navigate to Android_Screen_Recorder/unityrecorder/Tasks/build and double-click to "assembleRelease".
-+Wait for build process to complete then get your plugin in Android_Screen_Recorder/unityrecorder/build/generated/outputs/aar/unityrecorder-release.aar
-+Use 7-zip to open this aar plugin and delete class.jar inside "libs" folder. You can read this blog to understand the reason which force us to delete the class.jar file.
-+Copy the modified unityrecorder-release.aar to Plugins/Android folder inside your project.
-+Add a AndroidManifest.xml in the same folder which have the content below:
++Clone this project and open it using Android Studio.  
++In Gradle project: Navigate to Android_Screen_Recorder/unityrecorder/Tasks/build and double-click to "assembleRelease".  
++Wait for build process to complete then get your plugin in Android_Screen_Recorder/unityrecorder/build/generated/outputs /aar/unityrecorder-release.aar  
++Use 7-zip to open this aar plugin and delete class.jar inside "libs" folder. You can read this blog to understand the reason which force us to delete the class.jar file.  
++Copy the modified unityrecorder-release.aar to Plugins/Android folder inside your project.  
++Add a AndroidManifest.xml in the same folder which have the content below:  
 ```xml
 
 <?xml version="1.0" encoding="utf-8"?>
@@ -26,13 +26,13 @@ A simple android library project for Unity which contains some useful features:
 </manifest>
 
 ```
-Now your plugin is ready to use in any Unity project.
+Now your plugin is ready to use in any Unity project.  
 
-#Screen Record guide.
+#Screen Record guide.  
 
-To record android screen you have to follow this instruction:
-1.Set-up recorder.
-Call this inside Start() function of your script.
+To record android screen you have to follow this instruction:  
+1.Set-up recorder.  
+Call this inside Start() function of your script.  
 ```cs
 
 using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
@@ -45,39 +45,39 @@ using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.Un
         }
 	
 ```
-2. Start record.
-Call 2 lines of code to prepare for record.
+2. Start record.  
+Call 2 lines of code to prepare for record.  
 ```cs
 
 		androidRecorder.Call("setFileName", VIDEO_NAME);//androidRecorder is a private variable which we have get reference inside Start() function.
         	androidRecorder.Call("prepareRecorder");
 
 ```
-Then call this to start record screen.
+Then call this to start record screen.  
 ```cs
 
 		androidRecorder.Call("startRecording");
 		
 ```
 
-3. Stop record.
-Call
+3. Stop record.  
+Call  
 ```
 
 	androidRecorder.Call("stopRecording");
 	
 ```
-4. Handle callback
-Create a function name VideoRecorderCallback(string message) inside your project. It will receive callback from java side.
-List of messages from java:
-	+init_record_error
-	+init_record_success
-	+start_record
-	+stop_record
+4. Handle callback  
+Create a function name VideoRecorderCallback(string message) inside your project. It will receive callback from java side.  
+List of messages from java:  
+	+init_record_error  
+	+init_record_success  
+	+start_record  
+	+stop_record  
 	
-#Gallery refresh guide.
+#Gallery refresh guide.  
 
-This function refresh your gallery so pictures or videos capture inside your game will show up next time you open gallery, or file explore app. Call this on your unity script.
+This function refresh your gallery so pictures or videos capture inside your game will show up next time you open gallery, or file explore app. Call this on your unity script.  
 ```cs
 
         using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
@@ -85,7 +85,7 @@ This function refresh your gallery so pictures or videos capture inside your gam
 		}
 
 ```
-This function will open your gallery app.
+This function will open your gallery app.  
 ```cs
 
 		using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
@@ -93,18 +93,19 @@ This function will open your gallery app.
 	   }
 
 ```
-#Runtime Permissions guide
+#Runtime Permissions guide  
 
-Runtime permission allow you to request android permission at runtime(for android 6.0 and above). Example: When your game need to access location service, instead of request this permission at the first runtime now you can delay it until the moment your app actually need to use the permission.
-*Note that. Your app can only request the permissions which have been declared in AndroidManifest.xml
+Runtime permission allow you to request android permission at runtime(for android 6.0 and above). Example: When your game need to access location service, instead of request this permission at the first runtime now you can delay it until the moment your app actually need to use the permission.  
+*Note that. Your app can only request the permissions which have been declared in AndroidManifest.xml  
 
-1. You need to declare the permissions in AndroidManifest.xml. Then add this below meta-data to skip request permission dialog when you open app first time.
+1. You need to declare the permissions in AndroidManifest.xml. Then add this below meta-data to skip request permission dialog when you open app first time.  
 ```xml
 
 <meta-data android:name="unityplayer.SkipPermissionsDialog" android:value="true" />
 
 ```
-the final AndroidManifest.xml must look similar like this.
+the final AndroidManifest.xml must look similar like this.  
+
 ```xml
 
 <?xml version="1.0" encoding="utf-8"?>
@@ -122,7 +123,7 @@ the final AndroidManifest.xml must look similar like this.
 </manifest>
 
 ```
-2.To check if your app has a permision
+2.To check if your app has a permision  
 ```cs
 
 public static bool IsPermitted(AndroidPermission permission)
@@ -137,7 +138,7 @@ public static bool IsPermitted(AndroidPermission permission)
     }
 
 ```
-3.To request a permission.
+3.To request a permission.  
 ```cs
 
 public static void RequestPermission(AndroidPermission permission, UnityAction onAllow = null, UnityAction onDeny = null, UnityAction onDenyAndNeverAskAgain = null)
@@ -154,7 +155,7 @@ public static void RequestPermission(AndroidPermission permission, UnityAction o
     }
     
 ```
-4. Helper function to convert from enum to android permission string.
+4. Helper function to convert from enum to android permission string.  
 ```cs
 
 	private static string GetPermissionStrr(AndroidPermission permission)
@@ -164,7 +165,7 @@ public static void RequestPermission(AndroidPermission permission, UnityAction o
     
  ```
 
-5. List of android permissions
+5. List of android permissions  
 ```cs
 
 public enum AndroidPermission
