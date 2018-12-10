@@ -1,29 +1,28 @@
 package com.setik.kampertee;
 
-import com.unity3d.player.UnityPlayer;
-import com.unity3d.player.UnityPlayerActivity;
-
 import android.annotation.TargetApi;
 import android.content.ContentValues;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.hardware.display.VirtualDisplay;
 import android.media.MediaRecorder;
+import android.media.MediaScannerConnection;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
-import android.widget.Toast;
-import android.content.Context;
-import android.media.MediaScannerConnection;
-import android.net.Uri;
 import android.util.Log;
-import android.app.Activity;
+import android.widget.Toast;
+
+import com.google.firebase.MessagingUnityPlayerActivity;
+import com.unity3d.player.UnityPlayer;
 
 import java.io.IOException;
 
-public class AndroidUtils extends UnityPlayerActivity {
+public class AndroidUtils extends MessagingUnityPlayerActivity {
     public static MediaRecorder mRecorder;
     private MediaProjection mMediaProjection;
     private MediaProjectionManager mProjectionManager;
