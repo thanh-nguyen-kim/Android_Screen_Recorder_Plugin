@@ -38,13 +38,13 @@ Call this inside Start() function of your script.
 ```cs
 
 using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer"))
-        {
-            androidRecorder = unityClass.GetStatic<AndroidJavaObject>("currentActivity");
-            int width = (int)(Screen.width > SCREEN_WIDTH ? SCREEN_WIDTH : Screen.width);
-            int height = Screen.width > SCREEN_WIDTH ? (int)(Screen.height * SCREEN_WIDTH / Screen.width) : Screen.height;
-            androidRecorder.Call("setupVideo", width, height,(int)(1f * width * height / 100 * 240 * 7), 30);
-			androidRecorder.Call("setCallback","AndroidUtilsController","VideoRecorderCallback");//this line set up the callback from java to Unity for more information please google it.
-        }
+{
+    androidRecorder = unityClass.GetStatic<AndroidJavaObject>("currentActivity");
+    int width = (int)(Screen.width > SCREEN_WIDTH ? SCREEN_WIDTH : Screen.width);
+    int height = Screen.width > SCREEN_WIDTH ? (int)(Screen.height * SCREEN_WIDTH / Screen.width) : Screen.height;
+    androidRecorder.Call("setupVideo", width, height,(int)(1f * width * height / 100 * 240 * 7), 30);
+	androidRecorder.Call("setCallback","AndroidUtilsController","VideoRecorderCallback");//this line set up the callback from java to Unity for more information please google it.
+}
 	
 ```
 
@@ -52,50 +52,47 @@ using (AndroidJavaClass unityClass = new AndroidJavaClass("com.unity3d.player.Un
 Call 2 lines of code to prepare for record.  
 ```cs
 
-		androidRecorder.Call("setFileName", VIDEO_NAME);//androidRecorder is a private variable which we have get reference inside Start() function.
-        	androidRecorder.Call("prepareRecorder");
+androidRecorder.Call("setFileName", VIDEO_NAME);//androidRecorder is a private variable which we have get reference inside Start() function.
+androidRecorder.Call("prepareRecorder");
 
 ```
 
 Then call this to start record screen.  
 ```cs
-
-		androidRecorder.Call("startRecording");
-		
+androidRecorder.Call("startRecording");	
 ```
 
 ### 3. Stop record.  
 Call  
 ```
-
-	androidRecorder.Call("stopRecording");
-	
+androidRecorder.Call("stopRecording");
 ```
 
 ### 4. Handle callback  
 Create a function name VideoRecorderCallback(string message) inside your project. It will receive callback from java side.  
 List of messages from java:  
-	+init_record_error  
-	+init_record_success  
-	+start_record  
-	+stop_record  
-	
+
++ init_record_error  
++ init_record_success  
++ start_record  
++ stop_record  
+
 # Gallery refresh guide.  
 
 This function refresh your gallery so pictures or videos capture inside your game will show up next time you open gallery, or file explore app. Call this on your unity script.  
 ```cs
 
-        using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
-        javaClass.GetStatic<AndroidJavaObject>("currentActivity").Call("refreshGallery", path);
-		}
+using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
+	javaClass.GetStatic<AndroidJavaObject>("currentActivity").Call("refreshGallery", path);
+}
 
 ```
 This function will open your gallery app.  
 ```cs
 
-		using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
-			javaClass.GetStatic<AndroidJavaObject>("currentActivity").Call("openGallery");
-	   }
+using(AndroidJavaClass javaClass = new AndroidJavaClass("com.unity3d.player.UnityPlayer")){
+	javaClass.GetStatic<AndroidJavaObject>("currentActivity").Call("openGallery");
+}
 
 ```
 # Runtime Permissions guide  
