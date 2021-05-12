@@ -7,6 +7,10 @@ A simple android library project for Unity which contains some useful features:
 
 Thank for the open source project <https://github.com/HBiSoft/HBRecorde> which I use as a record service in this repository.
 
+Visit this site to get a details explaining of Unity_Android_Screen_Recorder.
+
+<https://killertee.wordpress.com/2018/01/08/unity-android-record-game-screen-with-audio-using-your-ad-hoc-plug-in/>
+
 ## Build guide
 
 + Clone this project and open it using Android Studio.  
