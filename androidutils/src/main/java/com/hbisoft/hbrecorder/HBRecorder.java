@@ -10,6 +10,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Environment;
 
 import androidx.annotation.DrawableRes;
@@ -24,12 +25,19 @@ import android.util.Log;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 
+import static com.hbisoft.hbrecorder.Constants.ERROR_KEY;
+import static com.hbisoft.hbrecorder.Constants.ERROR_REASON_KEY;
+import static com.hbisoft.hbrecorder.Constants.GENERAL_ERROR;
+import static com.hbisoft.hbrecorder.Constants.MAX_FILE_SIZE_KEY;
+import static com.hbisoft.hbrecorder.Constants.NO_SPECIFIED_MAX_SIZE;
+import static com.hbisoft.hbrecorder.Constants.ON_COMPLETE_KEY;
+import static com.hbisoft.hbrecorder.Constants.ON_START_KEY;
+
 /**
  * Created by HBiSoft on 13 Aug 2019
  * Copyright (c) 2019 . All rights reserved.
  */
 
-@SuppressWarnings("deprecation")
 @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
 public class HBRecorder implements MyListener {
     private int mScreenWidth;
@@ -57,9 +65,12 @@ public class HBRecorder implements MyListener {
     private int videoBitrate = 40000000;
     private String outputFormat = "DEFAULT";
     private int orientation;
+    private long maxFileSize = NO_SPECIFIED_MAX_SIZE; // Default no max size
     boolean wasOnErrorCalled = false;
     Intent service;
     boolean isPaused = false;
+    boolean isMaxDurationSet = false;
+    int maxDuration = 0;
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     public HBRecorder(Context context, HBRecorderListener listener) {
@@ -83,6 +94,17 @@ public class HBRecorder implements MyListener {
     public void setOutputUri(Uri uri){
         mWasUriSet = true;
         mUri = uri;
+    }
+
+    /*Set max duration in seconds */
+    public void setMaxDuration(int seconds){
+        isMaxDurationSet = true;
+        maxDuration = seconds * 1000;
+    }
+
+    /*Set max file size in kb*/
+    public void setMaxFileSize(long fileSize) {
+        maxFileSize = fileSize;
     }
 
     public boolean wasUriSet(){
@@ -311,40 +333,97 @@ public class HBRecorder implements MyListener {
                 protected void onReceiveResult(int resultCode, Bundle resultData) {
                     super.onReceiveResult(resultCode, resultData);
                     if (resultCode == Activity.RESULT_OK) {
-                        String errorListener = resultData.getString("errorReason");
-                        String onComplete = resultData.getString("onComplete");
-                        String onStart = resultData.getString("onStart");
-
+                        String errorListener = resultData.getString(ERROR_REASON_KEY);
+                        String onComplete = resultData.getString(ON_COMPLETE_KEY);
+                        int onStartCode = resultData.getInt(ON_START_KEY);
+                        int errorCode = resultData.getInt(ERROR_KEY);
                         if (errorListener != null) {
+                            //Stop countdown if it was set
+                            stopCountDown();
                             if (!mWasUriSet) {
                                 observer.stopWatching();
                             }
                             wasOnErrorCalled = true;
-                            hbRecorderListener.HBRecorderOnError(100, errorListener);
+                            if ( errorCode > 0 ) {
+                                hbRecorderListener.HBRecorderOnError(errorCode, errorListener);
+                            } else {
+                                hbRecorderListener.HBRecorderOnError(GENERAL_ERROR, errorListener);
+                            }
                             try {
-                                Intent mservice = new Intent(context, ScreenRecordService.class);
-                                context.stopService(mservice);
+                                Intent mService = new Intent(context, ScreenRecordService.class);
+                                context.stopService(mService);
                             }catch (Exception e){
                                 // Can be ignored
                             }
 
                         }else if (onComplete != null){
+                            //Stop countdown if it was set
+                            stopCountDown();
                             //OnComplete for when Uri was passed
                             if (mWasUriSet && !wasOnErrorCalled) {
                                 hbRecorderListener.HBRecorderOnComplete();
                             }
                             wasOnErrorCalled = false;
-                        }else if (onStart != null){
+                        }else if (onStartCode != 0){
                             hbRecorderListener.HBRecorderOnStart();
+                            //Check if max duration was set and start count down
+                            if (isMaxDurationSet){
+                                startCountdown();
+                            }
                         }
                     }
                 }
             });
+            // Max file size
+            service.putExtra(MAX_FILE_SIZE_KEY, maxFileSize);
             context.startService(service);
         }catch (Exception e){
             hbRecorderListener.HBRecorderOnError(0, Log.getStackTraceString(e));
         }
 
+    }
+
+    /*CountdownTimer for when max duration is set*/
+    Countdown countDown = null;
+    private void startCountdown() {
+        countDown = new Countdown(maxDuration, 1000, 0) {
+            @Override
+            public void onTick(long timeLeft) {
+                // Could add a callback to provide the time to the user
+                // Will add if users request this
+            }
+
+            @Override
+            public void onFinished() {
+                onTick(0);
+                // Since the timer is running on a different thread
+                // UI chances should be called from the UI Thread
+                activity.runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            stopScreenRecording();
+                            observer.stopWatching();
+                            hbRecorderListener.HBRecorderOnComplete();
+                        } catch (Exception e){
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }
+
+            @Override
+            public void onStopCalled() {
+                // Currently unused, but might be helpful in the future
+            }
+        };
+        countDown.start();
+    }
+
+    private void stopCountDown(){
+        if (countDown != null) {
+            countDown.stop();
+        }
     }
 
     /*Complete callback method*/

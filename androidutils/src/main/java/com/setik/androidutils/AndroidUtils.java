@@ -115,7 +115,17 @@ public class AndroidUtils extends UnityPlayerActivity implements HBRecorderListe
         hbRecorder.isAudioEnabled(audioEnabled);
         customSetting = true;
     }
-
+    public void setupVideo(int width, int height, int bitRate, int fps, boolean audioEnabled,String encoder) {
+        hbRecorder.enableCustomSettings();
+        hbRecorder.setScreenDimensions(height, width);
+        hbRecorder.setVideoFrameRate(fps);
+        hbRecorder.setVideoBitrate(bitRate);
+        hbRecorder.setVideoEncoder(encoder);
+        hbRecorder.setAudioBitrate(128000);
+        hbRecorder.setAudioSamplingRate(44100);
+        hbRecorder.isAudioEnabled(audioEnabled);
+        customSetting = true;
+    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     private void startRecording() {
         if (!customSetting)
