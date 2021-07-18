@@ -11,6 +11,10 @@ Visit this site to get a details explaining of Unity_Android_Screen_Recorder.
 
 <https://killertee.wordpress.com/2018/01/08/unity-android-record-game-screen-with-audio-using-your-ad-hoc-plug-in/>
 
+**<p align="center">If you are using this library in one of your applications and would like to thank me:</p>**
+
+<p align="center"><a href="https://www.buymeacoffee.com/KamperTee" target="_blank" ><img src="https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png" alt="Buy Me A Coffee" style="height: 41px !important;width: 164px !important;box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;-webkit-box-shadow: 0px 3px 2px 0px rgba(190, 190, 190, 0.5) !important;" ></a></p>
+
 ## Build guide
 
 + Clone this project and open it using Android Studio.  
@@ -57,7 +61,7 @@ Call this inside Start() function of your script.
             int bitrate = (int)(1f * width * height / 100 * 240 * 7);
             int fps = 30;
             bool audioEnable=true;
-            androidRecorder.Call("setupVideo", width, height,bitrate, fps,audioEnable);//this line manual sets the video record setting. You ca use the defaut setting by comment this code block
+            androidRecorder.Call("setupVideo", width, height,bitrate, fps, audioEnable, VideoEncoder.H264.ToString());//this line manual sets the video record setting. You can use the defaut setting by comment this code block
         }
 #endif
 
